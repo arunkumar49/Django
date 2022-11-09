@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>Home Template</h1>
+<hr>
+{% for rooms in room %}
+  <div>
+    <span>@{{rooms.host}}</span>
+    <h1>{{rooms.id}} -- <a href="{% url 'room' rooms.id %}">{{rooms.name}}</a></h1>
+    <small>{{rooms.topic}}</small>
+    <hr>
+  </div>
+{% endfor %}
+{% endblock content %}
