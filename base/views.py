@@ -43,5 +43,6 @@ def update_room(request, pk):
 
 def delete_room(request, pk):
   room = Room.objects.get(id = pk)
-  room.delete()
+  if request.method == 'GET':
+    room.delete()
   return redirect('home') 
