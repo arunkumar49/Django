@@ -3,12 +3,23 @@
 {% block content %}
 <h1>Home Template</h1>
 <hr>
+<a href="/room-form/">Create Room</a>
 {% for rooms in room %}
   <div>
     <span>@{{rooms.host}}</span>
+    <a href="{% url 'update_room' rooms.id %}">Edit</a><br>
+    <a href="{% url 'delete_room' rooms.id %}" onclick="del_function()">Delete</a>
     <h1>{{rooms.id}} -- <a href="{% url 'room' rooms.id %}">{{rooms.name}}</a></h1>
     <small>{{rooms.topic}}</small>
     <hr>
   </div>
 {% endfor %}
+<script>
+  function del_function() {
+    confirm('Are you sure want to delete?');
+    if (confirm == false) {
+      return
+    }
+  }
+</script>
 {% endblock content %}
