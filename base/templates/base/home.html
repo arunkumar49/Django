@@ -1,24 +1,49 @@
 {% extends 'main.html' %}
 
 {% block content %}
+
+<style>
+  .home-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+  }
+</style>
+
 <h1>Home Template</h1>
 <hr>
-<a href="/room-form/">Create Room</a>
-{% for rooms in room %}
+<form method="GET" action="{% url 'home' %}">
+  <input type="text" name="q" placeholder="Search">
+  <input type="Submit" value="Search" class="btn btn-success">
+</form>
+<a href="/room-form/" class="btn btn-success">Create Room</a>
+<div class="home-container">
+  <div>
+    <h3>Browse topics</h3>
+    <hr>
+    <div>
+      <a href="{% url 'home' %}">All</a>
+    </div>
+    {% for topic in topics %}
+      <div>
+        <a href="{% url 'home' %}?q={{topic.name}}">{{ topic.name }}</a>
+      </div>
+    {% endfor %}
+  </div>
+  <div>
+    {% for rooms in room %}
   <div>
     <span>@{{rooms.host}}</span>
-    <a href="{% url 'update_room' rooms.id %}">Edit</a><br>
+    {% if request.user == rooms.host %}
+    <a href="{% url 'update_room' rooms.id %}" class="btn btn-warning">Edit</a><br>
     <form action="{% url 'delete_room' rooms.id %}">
-      <button onclick="return confirm('Are you sure?')">Delete</button>
+      <button onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete</button>
     </form>
+    {% endif %}
     <h1>{{rooms.id}} -- <a href="{% url 'room' rooms.id %}">{{rooms.name}}</a></h1>
     <small>{{rooms.topic}}</small>
     <hr>
   </div>
 {% endfor %}
-<script>
-  function del_function() {
-    confirm('Are you sure want to delete?');
-  }
-</script>
+  </div>
+</div>
 {% endblock content %}
