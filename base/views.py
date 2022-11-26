@@ -1,17 +1,19 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Room, Topic, Message
+from . models import Room, Topic
 from django.contrib.auth.models import User
-from .form import RoomForm
+from . form import RoomForm
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm 
 
 
 # Create your views here.
 
 def login_reg(request):
+  page = 'login'
   if request.user.is_authenticated:
     return redirect('home')
   
@@ -32,7 +34,23 @@ def login_reg(request):
     else:
       messages.error(request, 'Username or Password is not correct.')
       
-  context = {}
+  context = {'page': page}
+  return render(request, 'base/login.html', context)
+
+
+def registerPage(request):
+  form = UserCreationForm()
+  if request.method == 'POST':
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+      user  = form.save(commit=False)
+      user.username = user.username.lower()
+      user.save()
+      login(request, user)
+      return redirect('home')
+    else:
+      messages.error(request, 'An error occured while regiestering')
+  context = {'form': form}
   return render(request, 'base/login.html', context)
 
 

@@ -9,7 +9,8 @@
 </head>
 <body>
   <h3><a href="/">Logo</a></h3>
- 
+  <br>
+  <p> Hello {{request.user}} </p>
   {% if messages %}
 {% for msg in messages %}
   <div class="alert alert-info alert-dismissable">
