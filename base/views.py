@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from . models import Room, Topic
+from . models import Room, Topic, Message
 from django.contrib.auth.models import User
 from . form import RoomForm
 from django.db.models import Q
@@ -38,6 +38,7 @@ def login_reg(request):
   return render(request, 'base/login.html', context)
 
 
+
 def registerPage(request):
   form = UserCreationForm()
   if request.method == 'POST':
@@ -50,8 +51,9 @@ def registerPage(request):
       return redirect('home')
     else:
       messages.error(request, 'An error occured while regiestering')
-  context = {'form': form}
+  context = {'form': form }
   return render(request, 'base/login.html', context)
+
 
 
 def home(request):
@@ -67,13 +69,26 @@ def home(request):
   return render(request, 'base/home.html', context)
 
 
+
 def room(request, pk):
   room = Room.objects.get(id=pk)
-  context = {'room': room}
+  messages = room.message_set.all()
+  
+  if request.method == 'POST':
+    message = Message.objects.create(
+      user = request.user,
+      room = room,
+      body = request.POST.get('body')
+    )
+    return redirect('room', pk = room.id)
+  
+  context = {'room': room, 'messages': messages}
   return render(request, 'base/room.html', context)
 
+
+
 @login_required(login_url='login_reg')
-def room_form(request):     #Function for creating new room
+def room_form(request):                     #Function for creating new room
   form = RoomForm()
   if request.method == 'POST':
     form = RoomForm(request.POST)
@@ -82,6 +97,8 @@ def room_form(request):     #Function for creating new room
       return redirect('home')
   context = {'form': form}
   return render(request, 'base/room_form.html', context)
+
+
 
 @login_required(login_url='login_reg')
 def update_room(request, pk):
@@ -99,6 +116,8 @@ def update_room(request, pk):
   context = {'form': form}
   return render(request, 'base/room_form.html', context)
 
+
+
 @login_required(login_url='login_reg')
 def delete_room(request, pk):
   room = Room.objects.get(id=pk)
@@ -107,6 +126,7 @@ def delete_room(request, pk):
   if request.method == 'GET':
     room.delete()
   return redirect('home')
+
 
 
 def logout_view(request):
